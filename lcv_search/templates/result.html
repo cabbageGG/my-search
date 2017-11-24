@@ -33,7 +33,7 @@
                 <ul class="subfieldContext">
                 	<li>
                     	<span class="name">伯乐在线</span>
-						<span class="unit">(None)</span>
+						<span class="unit">({{ jobbole_count }})</span>
                     </li>
                     <li>
                     	<span class="name">知乎</span>
@@ -58,7 +58,7 @@
             </div>
             <div class="resultArea">
             	<p class="resultTotal">
-                	<span class="info">找到约&nbsp;<span class="totalResult">45</span>&nbsp;条结果(用时<span class="time">0.643128</span>秒)，共约<span class="totalPage">5</span>页</span>
+                	<span class="info">找到约&nbsp;<span class="totalResult">{{ total_nums }}</span>&nbsp;条结果(用时<span class="time">{{ last_seconds }}</span>秒)，共约<span class="totalPage">{{ page_nums }}</span>页</span>
                 </p>
                 <div class="resultList">
                     {% for hit in all_hits  %}
@@ -102,9 +102,9 @@
             	<div class="hotSearch">
                 	<h6>热门搜索</h6>
                     <ul class="historyList">
-                        
-                            <li><a href="/search?q=linux">linux</a></li>
-                        
+                        {% for hot_search in topn_search %}
+                            <li><a href="/search?q={{ hot_search }}">{{ hot_search }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="mySearch">
@@ -172,13 +172,14 @@
     });
 	var key_words = "java"
 	//分页
-	$(".pagination").pagination(45, {
-		current_page :0, //当前页码
+	$(".pagination").pagination({{ total_nums }}, {
+		current_page :{{ page|add:'-1' }}, //当前页码
 		items_per_page :10,
 		display_msg :true,
 		callback :pageselectCallback
 	});
 	function pageselectCallback(page_id, jq) {
+	    page_id += 1
 		window.location.href=search_url+'?q='+key_words+'&p='+page_id
 	}
 	

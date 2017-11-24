@@ -4,8 +4,11 @@ from search.models import ArticleType
 from django.http import HttpResponse
 from elasticsearch import Elasticsearch
 import json
+from datetime import datetime
+import redis
 
 client = Elasticsearch(hosts=["127.0.0.1"])
+redis_cli = redis.StrictRedis()
 
 # Create your views here.
 
@@ -36,12 +39,19 @@ class SearchView(View):
         key_words = request.GET.get('q', '')
         s_type = request.GET.get('s_type', 'article')
 
+        redis_cli.zincrby("search_keywords_set", key_words)
+
+        topn_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+
+        jobbole_count = redis_cli.get("jobbole_count")
+
         page = request.GET.get('p', '1')
         try:
             page = int(page)
         except:
             page = 1
 
+        start_time = datetime.now()
         response = client.search(
             index= "jobbole",
             body={
@@ -63,7 +73,8 @@ class SearchView(View):
                 }
             }
         )
-
+        end_time = datetime.now()
+        last_seconds = (end_time - start_time).total_seconds()
         total_nums = response["hits"]["total"]
         if (page % 10) > 0:
             page_nums = int(total_nums / 10) + 1
@@ -91,4 +102,7 @@ class SearchView(View):
                                                "all_hits": hit_list,
                                                "key_words": key_words,
                                                "total_nums": total_nums,
-                                               "page_nums": page_nums})
+                                               "page_nums": page_nums,
+                                               "last_seconds":last_seconds,
+                                               "jobbole_count":jobbole_count,
+                                               "topn_search":topn_search})
