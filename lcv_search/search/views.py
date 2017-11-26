@@ -23,9 +23,8 @@ class SuggestView(View):
         if key_words:
             s = ArticleType.search()
             s = s.suggest('my_suggest', key_words, completion={
-                "field":"suggest", "fuzzy":{
-                    "fuzziness":2
-                },
+                "field":"suggest",
+                "fuzzy":{ "fuzziness":2 },
                 "size":10
             })
             suggestions = s.execute_suggest()
