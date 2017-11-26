@@ -36,5 +36,29 @@ class ArticleType(DocType):
         index = "jobbole"
         doc_type = "article"
 
+class JobType(DocType):
+    #拉勾职位类型
+    suggest = Completion(analyzer=ik_analyzer)
+    title = Text(analyzer="ik_max_word")
+    url = Keyword()
+    url_object_id = Keyword()
+    salary = Text(analyzer="ik_max_word")
+    job_city = Keyword()
+    work_years = Text(analyzer="ik_max_word")
+    degree_need = Keyword()
+    job_type = Keyword()
+    tags = Text(analyzer="ik_max_word")
+    publish_time = Keyword()
+    job_advantage = Text(analyzer="ik_max_word")
+    job_desc = Text(analyzer="ik_max_word")
+    job_addr = Text(analyzer="ik_max_word")
+    company_name = Text(analyzer="ik_max_word")
+    company_url = Keyword()
+    crawl_time = Date()
+
+    class Meta:
+        index = "lagou"
+        doc_type = "job"
+
 if __name__ == "__main__":
     ArticleType.init()
