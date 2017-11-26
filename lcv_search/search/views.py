@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.views.generic.base import View
-from search.models import ArticleType, JobType
+from search.models import ArticleType, JobType, QuestionType
 from django.http import HttpResponse
 from elasticsearch import Elasticsearch
 import json
@@ -25,7 +25,7 @@ class SuggestView(View):
         if s_type == "article":
             s = ArticleType.search()
         elif s_type == "question":
-            s = ArticleType.search()
+            s = QuestionType.search()
         elif s_type == "job":
             s = JobType.search()
         else:
@@ -139,12 +139,12 @@ class SearchView(View):
     def get_zhihu(self, page, key_words):
         start_time = datetime.now()
         response = client.search(
-            index="jobbole",
+            index="zhihu",
             body={
                 "query": {
                     "multi_match": {
                         "query": key_words,
-                        "fields": ["tags", "title", "content"]
+                        "fields": [ "title", "content"]
                     }
                 },
                 "from": (page - 1) * 10,
@@ -178,7 +178,7 @@ class SearchView(View):
             else:
                 hit_dict["content"] = hit["_source"]["content"][:500]
 
-            hit_dict["create_date"] = hit["_source"]["create_date"]
+            hit_dict["create_date"] = hit["_source"]["crawl_time"]
             hit_dict["url"] = hit["_source"]["url"]
             hit_dict["score"] = hit["_score"]
 

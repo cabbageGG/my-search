@@ -60,5 +60,23 @@ class JobType(DocType):
         index = "lagou"
         doc_type = "job"
 
+class QuestionType(DocType):
+    #知乎问题
+    suggest = Completion(analyzer=ik_analyzer)
+    zhihu_id = Text(analyzer="ik_max_word")
+    topics = Text(analyzer="ik_max_word")
+    url = Keyword()
+    title = Text(analyzer="ik_max_word")
+    content = Text(analyzer="ik_max_word")
+    answer_num = Integer()
+    comments_num = Integer()
+    watch_user_num = Integer()
+    click_num = Integer()
+    crawl_time = Date()
+
+    class Meta:
+        index = "zhihu"
+        doc_type = "question"
+
 if __name__ == "__main__":
     ArticleType.init()
